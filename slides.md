@@ -343,7 +343,7 @@ onMounted(async () => {
 
 <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
   <div id="plot-os" style="width: 50%; height: 500px;"></div>
-  <div id="plot-pie" style="width: 40%; height: 500px;"></div>
+  <div id="plot-pie" style="width: 30%; height: 500px;"></div>
 </div>
 
 ---
@@ -358,4 +358,12 @@ layout: section
 
 # Part 2: some qualitative results 
 
+
+---
+
+# What is your coding set up like?
+
+
+- Everyone uses VsCode except me, who uses PyCharm
+- Most people don't use particular extensions with VsCode, except for the language-specific ones
 
