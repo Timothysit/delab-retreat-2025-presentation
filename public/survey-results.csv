@@ -56,3 +56,70 @@ cong, os-windows, 1
 chris, os-windows, 100
 nikos, os-mac, 100
 oli, os-mac, 100
+me, os-mac, 10
+me, os-linux, 90
+sally, comments, regularly
+sally, ai, regularly
+sally, hpc, no
+sally, git, sometimes
+jo, comments, sometimes
+jo, ai, often
+jo, hpc, often
+jo, git, often
+chaofei, comments, sometimes
+chaofei, ai, regularly
+chaofei, hpc, sometimes
+chaofei, git, often
+mehul, comments, often
+mehul, ai, often
+mehul, hpc, often
+mehul, git, often
+ivana, comments, sometimes
+ivana, ai, regularly
+ivana, hpc, often
+ivana, git, often
+tom, comments, often 
+tom, ai, sometimes
+tom, hpc, sometimes
+tom, git, often
+jj, comments, often 
+jj, ai, regularly
+jj, hpc, sometimes
+jj, git, often
+cc, comments, often 
+cc, ai, regularly
+cc, hpc, rarely
+cc, git, no
+margot, comments, often 
+margot, ai, rarely
+margot, hpc, rarely
+margot, git, often
+cong, comments, often 
+cong, ai, sometimes
+cong, hpc, no
+cong, git, often
+chris, comments, often 
+chris, ai, often
+chris, hpc, rarely
+chris, git, often
+nikos, comments, often 
+nikos, ai, often
+nikos, hpc, no
+nikos, git, no
+oli, comments, sometimes 
+oli, ai, sometimes
+oli, hpc, no
+oli, git, no
+me, comments, sometimes
+me, ai, regularly
+me, hpc, no
+me, git, sometimes
+
+
+
+
+
+
+
+
+

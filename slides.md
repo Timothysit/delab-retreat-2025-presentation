@@ -73,20 +73,12 @@ layout: section
 
 
 
+
 <script setup lang="ts">
 import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
 
-function resizeAllVisiblePlots() {
-  const plots = document.querySelectorAll('.js-plotly-plot')
-  plots.forEach(plot => Plotly.Plots.resize(plot))
-}
 
-window.addEventListener('resize', resizeAllVisiblePlots)
-window.addEventListener('slidev:navigation', () => {
-  // Delay needed to wait for DOM layout to settle
-  setTimeout(resizeAllVisiblePlots, 200)
-})
 
 onMounted(async () => {
   const response = await fetch('survey-results.csv')
@@ -160,7 +152,7 @@ onMounted(async () => {
     size: 14,
     color: '#333'
   },
-  })
+  }, {displayModeBar: false})
   let highlightedName: string | null = null
 
   const plotDiv = document.getElementById('plot')
@@ -213,7 +205,7 @@ onMounted(async () => {
     },
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)'
-  })
+  }, {displayModeBar: false})
 
 
 })
@@ -223,8 +215,8 @@ onMounted(async () => {
 </script>
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 40px;">
-  <div id="plot" style="width: 70%; height: 500px;"></div>
-  <div id="plot-language-pie" style="width: 30%; height: 500px%;"></div>
+  <div id="plot" style="width: 50%; height: 50%;"></div>
+  <div id="plot-language-pie" style="width: 30%; height: 50%;"></div>
 </div>
 
 ---
@@ -232,21 +224,11 @@ onMounted(async () => {
 ## Which operating system do you use?
 
 
-
 <script setup lang="ts">
 import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
 
-function resizeAllVisiblePlots() {
-  const plots = document.querySelectorAll('.js-plotly-plot')
-  plots.forEach(plot => Plotly.Plots.resize(plot))
-}
 
-window.addEventListener('resize', resizeAllVisiblePlots)
-window.addEventListener('slidev:navigation', () => {
-  // Delay needed to wait for DOM layout to settle
-  setTimeout(resizeAllVisiblePlots, 200)
-})
 
 onMounted(async () => {
   const response = await fetch('survey-results.csv')
@@ -298,7 +280,8 @@ onMounted(async () => {
 
   console.log("Traces:", traces)
 
-  Plotly.newPlot('plot-os', traces, {
+  Plotly.newPlot('plot-os', traces, 
+  {
    title: undefined,
    yaxis: {
       title: { text: 'Usage (%)', font: { size: 16, color: '#333' } },
@@ -316,8 +299,9 @@ onMounted(async () => {
     family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
     size: 14,
     color: '#333'
-  },
-  })
+  }, 
+  },  {displayModeBar: false}
+  )
   let highlightedName: string | null = null
 
   const plotDiv = document.getElementById('plot-os')
@@ -372,25 +356,152 @@ onMounted(async () => {
     },
     paper_bgcolor:'rgba(167, 84, 84, 0)',
     plot_bgcolor: 'rgba(0,0,0,0)'
-  })
+  }, {displayModeBar: false})
 
 
 
 })
 
 
-
 </script>
 
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-  <div id="plot-os" style="width: 50%; height: 500px;"></div>
-  <div id="plot-pie" style="width: 30%; height: 500px;"></div>
+<div style="display: flex; justify-content: left; align-items: center;">
+  <div id="plot-os" style="width: 60%; height: 50%;"></div>
+  <div id="plot-pie" style="width: 30%; height: 50%;"></div>
 </div>
 
 ---
+layout: center
+---
 
 ## Some other numbers
+
+
+<script setup lang="ts">
+import Plotly from 'plotly.js-dist'
+import { onMounted, nextTick } from 'vue'
+
+onMounted(async () => {
+  await nextTick()
+
+  const response = await fetch('survey-results.csv')
+  const text = await response.text()
+  const lines = text.trim().split('\n')
+  const header = lines[0].split(',').map(h => h.trim())
+  const rows = lines.slice(1)
+
+  const nameIdx = header.indexOf('name')
+  const questionIdx = header.indexOf('question')
+  const answerIdx = header.indexOf('answer')
+
+  const answerOrder = ['often', 'regularly', 'sometimes', 'rarely', 'no']
+  const answerColors = [
+    '#d4e6f1',  // light blue (often)
+    '#7fb3d5',  // medium blue (regularly)
+    '#2980b9',  // darker blue (sometimes)
+    '#1f618d',  // even darker blue (rarely)
+    '#154360'   // very dark blue (no)
+  ]
+
+  const data = rows.map(line => {
+    const cols = line.split(',').map(c => c.trim())
+    return {
+      name: cols[nameIdx],
+      question: cols[questionIdx],
+      answer: cols[answerIdx]
+    }
+  })
+
+  
+
+  // Map of question keys → human-readable titles
+  const questionsToPlot = {
+    comments: 'How frequently do you <br> comment your code?',
+    ai: 'How frequently do you use AI?',
+    hpc: 'How frequently do you use the HPC?',
+    git: 'How frequently do you use Git?'
+  }
+
+  for (const [q, title] of Object.entries(questionsToPlot)) {
+    const divId = `pie-${q}`
+
+    const relevantAnswers = data
+      .filter(d => d.question === q)
+      .map(d => d.answer.trim().toLowerCase())
+
+    const answerCounts = Object.entries(
+      relevantAnswers.reduce((acc, a) => {
+        acc[a] = (acc[a] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+    )
+
+    const countsByAnswer = new Map(answerOrder.map(a => [a, 0]))
+    relevantAnswers.forEach(a => {
+      if (countsByAnswer.has(a)) {
+        countsByAnswer.set(a, countsByAnswer.get(a)! + 1)
+      }
+    })
+
+    const labels = answerOrder
+    const values = answerOrder.map(a => countsByAnswer.get(a) || 0)
+    const colors = answerColors
+
+    // Filter out categories with value 0
+    const filtered = labels
+      .map((label, i) => ({ label, value: values[i], color: colors[i] }))
+      .filter(d => d.value > 0)
+
+    const filteredLabels = filtered.map(d => d.label)
+    const filteredValues = filtered.map(d => d.value)
+    const filteredColors = filtered.map(d => d.color)
+
+    console.log(`Answers for ${q}:`, relevantAnswers)
+    console.log('Counts before filtering:', countsByAnswer)
+    console.log('Filtered labels:', filteredLabels)
+    console.log('Filtered values:', filteredValues)
+    console.log('Filtered colors:', filteredColors)
+
+    Plotly.newPlot(divId, [{
+      type: 'pie',
+      labels: filteredLabels,
+      values: filteredValues,
+      textinfo: 'label+percent',
+      hoverinfo: 'label+value+percent',
+      marker: { colors: filteredColors, line: {       color: '#fff', width: 1 } }
+    }], {
+      title: {
+        text: title,
+        font: { size: 12 },
+        pad: { b: 5 }
+      },
+      margin: { t: 40, b: 10, l: 80, r: 10 },
+      showlegend: false,
+      font: {
+        family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+        size: 12,
+        color: '#333'
+      },
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)'
+    }, {
+      displayModeBar: false
+    })
+  }
+})
+</script>
+
+<div style="
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  column-gap: 40px;
+">
+  <div id="pie-comments" style="width: 200px; height: 250px;"></div>
+  <div id="pie-ai" style="width: 200px; height: 250px;"></div>
+  <div id="pie-hpc" style="width: 200px; height: 250px;"></div>
+  <div id="pie-git" style="width: 200px; height: 250px;"></div>
+</div>
 
 
 ---
