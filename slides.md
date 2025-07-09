@@ -60,6 +60,17 @@ layout: section
 import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
 
+function resizeAllVisiblePlots() {
+  const plots = document.querySelectorAll('.js-plotly-plot')
+  plots.forEach(plot => Plotly.Plots.resize(plot))
+}
+
+window.addEventListener('resize', resizeAllVisiblePlots)
+window.addEventListener('slidev:navigation', () => {
+  // Delay needed to wait for DOM layout to settle
+  setTimeout(resizeAllVisiblePlots, 200)
+})
+
 onMounted(async () => {
   const response = await fetch('survey-results.csv')
   const text = await response.text()
@@ -187,14 +198,6 @@ onMounted(async () => {
     plot_bgcolor: 'rgba(0,0,0,0)'
   })
 
-  setTimeout(() => {
-  const plotDiv = document.getElementById('plot')
-  if (plotDiv) Plotly.Plots.resize(plotDiv)
-
-  const pieDiv = document.getElementById('plot-language-pie')
-  if (pieDiv) Plotly.Plots.resize(pieDiv)
-}, 300)  // delay gives Slidev time to render the layout
-
 
 })
 
@@ -216,6 +219,17 @@ onMounted(async () => {
 <script setup lang="ts">
 import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
+
+function resizeAllVisiblePlots() {
+  const plots = document.querySelectorAll('.js-plotly-plot')
+  plots.forEach(plot => Plotly.Plots.resize(plot))
+}
+
+window.addEventListener('resize', resizeAllVisiblePlots)
+window.addEventListener('slidev:navigation', () => {
+  // Delay needed to wait for DOM layout to settle
+  setTimeout(resizeAllVisiblePlots, 200)
+})
 
 onMounted(async () => {
   const response = await fetch('survey-results.csv')
@@ -343,13 +357,7 @@ onMounted(async () => {
     plot_bgcolor: 'rgba(0,0,0,0)'
   })
 
-  setTimeout(() => {
-  const plotDiv = document.getElementById('plot-os')
-  if (plotDiv) Plotly.Plots.resize(plotDiv)
 
-  const pieDiv = document.getElementById('plot-pie')
-  if (pieDiv) Plotly.Plots.resize(pieDiv)
-}, 300)  // delay gives Slidev time to render the layout
 
 })
 
@@ -384,3 +392,8 @@ layout: section
 - Everyone uses VsCode except me, who uses PyCharm
 - Most people don't use particular extensions with VsCode, except for the language-specific ones
 
+
+# The end 
+
+ - Thank you to everyone who I interviewed 
+ - Slides are in https://timothysit.github.io/delab-retreat-2025-presentation
