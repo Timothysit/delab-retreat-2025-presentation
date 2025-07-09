@@ -35,13 +35,30 @@ layout: default
 
 # Motivation
 
+<v-clicks>
+
  - I (we) code quite a lot 
  - If I am just 1% better at coding, hopefully my productivity compounds 
  - Start of a postdoc is a good time to start afresh 
 
+ </v-clicks>
+
 ---
 
 # Talk outline 
+
+<v-clicks>
+
+- Part 1: Some quantitative results 
+  - Programming language 
+  - Operating System 
+  - Misc coding habits 
+- Part 2: Some qualitative results 
+  - Coding set up (editors)
+  - Code organisation 
+  - Useful libraries / extensions
+
+</v-clicks>
 
 ---
 layout: section
@@ -388,12 +405,22 @@ layout: section
 
 # What is your coding set up like?
 
+<v-clicks>
 
-- Everyone uses VsCode except me, who uses PyCharm
+- Everyone uses VsCode except me, who uses PyCharm 
 - Most people don't use particular extensions with VsCode, except for the language-specific ones
 
 
+</v-clicks>
+
+---
+
 # The end 
+
+<v-clicks>
 
  - Thank you to everyone who I interviewed 
  - Slides are in https://timothysit.github.io/delab-retreat-2025-presentation
+
+
+ </v-clicks>
