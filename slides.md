@@ -187,6 +187,15 @@ onMounted(async () => {
     plot_bgcolor: 'rgba(0,0,0,0)'
   })
 
+  setTimeout(() => {
+  const plotDiv = document.getElementById('plot')
+  if (plotDiv) Plotly.Plots.resize(plotDiv)
+
+  const pieDiv = document.getElementById('plot-language-pie')
+  if (pieDiv) Plotly.Plots.resize(pieDiv)
+}, 300)  // delay gives Slidev time to render the layout
+
+
 })
 
 
@@ -195,7 +204,7 @@ onMounted(async () => {
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 40px;">
   <div id="plot" style="width: 70%; height: 500px;"></div>
-  <div id="plot-language-pie" style="width: 30%; height: 500px;"></div>
+  <div id="plot-language-pie" style="width: 30%; height: 500px%;"></div>
 </div>
 
 ---
@@ -333,6 +342,14 @@ onMounted(async () => {
     paper_bgcolor:'rgba(167, 84, 84, 0)',
     plot_bgcolor: 'rgba(0,0,0,0)'
   })
+
+  setTimeout(() => {
+  const plotDiv = document.getElementById('plot-os')
+  if (plotDiv) Plotly.Plots.resize(plotDiv)
+
+  const pieDiv = document.getElementById('plot-pie')
+  if (pieDiv) Plotly.Plots.resize(pieDiv)
+}, 300)  // delay gives Slidev time to render the layout
 
 })
 
