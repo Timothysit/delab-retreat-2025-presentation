@@ -247,8 +247,8 @@ onMounted(async () => {
 </script>
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 40px;">
-  <div id="plot" style="width: 700px; height: 500px;"></div>
-  <div id="plot-language-pie" style="width: 450px; height: 450px;"></div>
+  <div id="plot" style="width: 600px; height: 500px;"></div>
+  <div id="plot-language-pie" style="width: 400px; height: 400px;"></div>
 </div>
 
 ---
