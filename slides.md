@@ -61,7 +61,7 @@ import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
 
 onMounted(async () => {
-  const response = await fetch('/survey-results.csv')
+  const response = await fetch('survey-results.csv')
   const text = await response.text()
   const lines = text.trim().split('\n')
   const header = lines[0].split(',').map(h => h.trim())
@@ -209,7 +209,7 @@ import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
 
 onMounted(async () => {
-  const response = await fetch('/survey-results.csv')
+  const response = await fetch('survey-results.csv')
   const text = await response.text()
   const lines = text.trim().split('\n')
   const header = lines[0].split(',').map(h => h.trim())
