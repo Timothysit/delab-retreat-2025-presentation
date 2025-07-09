@@ -14,6 +14,8 @@
     "@slidev/theme-seriph": "^0.25.0",
     "@slidev/theme-shibainu": "^0.25.0",
     "plotly.js-dist": "^3.0.1",
+    "primeicons": "^7.0.0",
+    "primevue": "^3.53.1",
     "slidev-theme-geist": "^0.8.1",
     "vue": "^3.5.17"
   }

@@ -1,6 +1,7 @@
 ---
 # You can also start simply with 'default'
 theme: apple-basic
+colorSchema: light
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
 # background: https://cover.sli.dev
@@ -19,6 +20,7 @@ mdc: true
 # open graph
 # seoMeta:
 #  ogImage: https://cover.sli.dev
+layout:  statement
 ---
 
 
@@ -26,11 +28,39 @@ mdc: true
 
 # Studying coding behaviour in delab
 
+
+
 Some results after talking to 13 delab members about how they code
+
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const code = ref('')
+const source = `import numpy as npY
+import matplotlib.pyplot as MpLPL_t 
+import pandas as PANDAS
+from sklearn.decomposition import PCA 
+
+fig, ax = MpLPL_t.subplots()
+`
+
+onMounted(() => {
+  let i = 0
+  const loop = () => {
+    code.value = source.slice(0, i)
+    i = (i + 1) % (source.length + 1)
+    setTimeout(loop, 100)
+  }
+  loop()
+})
+</script>
+
+<pre><code class="language-python">{{ code }}</code></pre>
+
 
 
 ---
-layout: default
+layout: center
 ---
 
 # Motivation
@@ -43,6 +73,8 @@ layout: default
 
  </v-clicks>
 
+---
+layout: center
 ---
 
 # Talk outline 
@@ -215,8 +247,8 @@ onMounted(async () => {
 </script>
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 40px;">
-  <div id="plot" style="width: 50%; height: 50%;"></div>
-  <div id="plot-language-pie" style="width: 30%; height: 50%;"></div>
+  <div id="plot" style="width: 700px; height: 500px;"></div>
+  <div id="plot-language-pie" style="width: 450px; height: 450px;"></div>
 </div>
 
 ---
@@ -367,8 +399,8 @@ onMounted(async () => {
 
 
 <div style="display: flex; justify-content: left; align-items: center;">
-  <div id="plot-os" style="width: 60%; height: 50%;"></div>
-  <div id="plot-pie" style="width: 30%; height: 50%;"></div>
+  <div id="plot-os" style="width: 500px; height: 500px;"></div>
+  <div id="plot-pie" style="width: 400px; height: 400px;"></div>
 </div>
 
 ---
@@ -419,7 +451,7 @@ onMounted(async () => {
   const questionsToPlot = {
     comments: 'How frequently do you <br> comment your code?',
     ai: 'How frequently do you use AI?',
-    hpc: 'How frequently do you use the HPC?',
+    hpc: 'How frequently do you <br> use the HPC?',
     git: 'How frequently do you use Git?'
   }
 
@@ -513,25 +545,202 @@ layout: section
 
 
 ---
+layout: center
+---
 
 # What is your coding set up like?
 
 <v-clicks>
 
-- Everyone uses VsCode except me, who uses PyCharm 
-- Most people don't use particular extensions with VsCode, except for the language-specific ones
+- Everyone uses VSCode except me, who uses PyCharm 
+- Most people don't use particular extensions with VSCode, except for the language-specific ones
 
+But here are some that are mentioned / others that I found....
+
+
+</v-clicks>
+
+
+---
+transition: fade
+---
+
+# Useful VSCode extensions 
+
+
+<div v-click>
+
+## Rainbow CSV : colours your csv files
+
+![alt text](https://user-images.githubusercontent.com/5349737/190057249-8ec401f6-b76d-4420-a6af-053dd502f8a9.png)
+
+</div>
+
+---
+layout: center
+transition: fade
+---
+
+# Useful VSCode extensions 
+
+## Indent Rainbow and Rainbow brackets
+
+<div class="grid grid-cols-2 gap-4">
+
+![alt text](https://raw.githubusercontent.com/oderwat/vscode-indent-rainbow/master/assets/example.png)
+
+![alt text](https://github.com/mazesec/vscode-rainbow-brackets/blob/main/images/vue.png?raw=true)
+
+</div>
+
+---
+transition: fade
+---
+
+# Useful VSCode extensions
+
+## PyLance : autocomplete, navigation and other utils 
+
+![Pylance Features](https://raw.githubusercontent.com/microsoft/pylance-release/main/images/all-features.gif)
+
+
+
+---
+layout: center
+transition: fade
+---
+
+# More useful VSCode extensions 
+
+ - autoDocString: generates python docstrings
+ - RemoteExplorer: SSH to remote machines
+ - Code Runner: provide shortcuts to evaluate current line / current script in python
+ - Error lens: highlights syntax / other simple errors in code 
+ - Better comments: colouring system for comments (eg. TODOs, warnings, questions)
+ - vscode-spotify
+
+
+
+--- 
+
+
+# How do you structure your (analysis) code?
+
+<v-clicks>
+
+ - most people start with jupyter notebooks, then move to scripts
+ - others mainly use jupyter notebooks
+ - During the start of my PhD, Maxime Rio from Tom's lab recommended CookieCutter Datascience to me, maybe you will also find that useful
 
 </v-clicks>
 
 ---
 
+# Cookiecutter datascience structure
+
+<script setup>
+import { ref } from 'vue'
+
+const treeData = [
+  { label: '📄 LICENSE' },
+  { label: '📄 Makefile' },
+  { label: '📄 README.md' },
+  {
+    label: '📁 data',
+    children: [
+      { label: '📁 external ← Data from third party sources' },
+      { label: '📁 interim ← Intermediate transformed data' },
+      { label: '📁 processed ← Final canonical data sets' },
+      { label: '📁 raw ← Original immutable data dump' }
+    ]
+  },
+  { label: '📁 docs ← mkdocs project' },
+  { label: '📁 models ← Trained models and summaries' },
+  { label: '📁 notebooks ← Jupyter notebooks with naming convention' },
+  { label: '📄 pyproject.toml ← Project config & tool settings' },
+  { label: '📁 references ← Manuals, dictionaries, etc.' },
+  {
+    label: '📁 reports',
+    children: [
+      { label: '📁 figures ← Generated graphics for reporting' }
+    ]
+  },
+  { label: '📄 requirements.txt ← Reproducible environment' },
+  { label: '📄 setup.cfg ← flake8 config' },
+  {
+    label: '📁 {{ cookiecutter.module_name }} ← Project source code',
+    children: [
+      { label: '📄 __init__.py ← Python module init' },
+      { label: '📄 config.py ← Configuration variables' },
+      { label: '📄 dataset.py ← Data loading/generation' },
+      { label: '📄 features.py ← Feature engineering' },
+      {
+        label: '📁 modeling',
+        children: [
+          { label: '📄 __init__.py' },
+          { label: '📄 predict.py ← Inference code' },
+          { label: '📄 train.py ← Model training' }
+        ]
+      },
+      { label: '📄 plots.py ← Visualization code' }
+    ]
+  }
+]
+
+const openStates = ref(treeData.map(() => false))
+
+const toggle = (i) => {
+  openStates.value[i] = !openStates.value[i]
+}
+</script>
+
+<div class="text-left font-mono text-sm">
+  <ul>
+    <li v-for="(node, i) in treeData" :key="i">
+      <div @click="toggle(i)" class="cursor-pointer hover:text-blue-500">
+        {{ node.label }}
+      </div>
+      <ul v-if="openStates[i] && node.children" class="pl-4">
+        <li v-for="child in node.children" :key="child.label">
+          {{ child.label }}
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+
+---
+layout: center
+---
+
+# Useful (Python) libraries 
+
+ - Polars : Fast pandas dataframe
+ - pymer4 : R-style linear-mixed effects model in python
+ - JAX : for custom neural networks / automatic differentiation
+ - Dask : lazy-loading of arrays that don't fit into memory
+ - Typer / Rich : Features for bulding command line interface 
+ - Decord : efficient loading of videos 
+
+
+
+---
+
+
+
 # The end 
 
 <v-clicks>
 
+
  - Thank you to everyone who I interviewed 
- - Slides are in https://timothysit.github.io/delab-retreat-2025-presentation
+ - Slides were made using sli.dev, they are in https://timothysit.github.io/delab-retreat-2025-presentation
+
+ Some other things I didn't have time to discuss: 
+
+  - writing tests for analysis code
+  - python environment management (why are more conda environments so hard to reproduce?)
 
 
  </v-clicks>
