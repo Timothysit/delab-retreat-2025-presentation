@@ -60,16 +60,16 @@ onMounted(() => {
 
 
 ---
-layout: center
+layout: image-right
+image: image1.jpg
 ---
 
 # Motivation
 
 <v-clicks>
 
- - I (we) code quite a lot 
- - If I am just 1% better at coding, hopefully my productivity compounds 
- - Start of a postdoc is a good time to start afresh 
+ - I (we) code quite a lot, so hopefully any small improvement compounds
+ - Start of a postdoc is a good time to start afresh : no need to work around early PhD code
 
  </v-clicks>
 
@@ -93,7 +93,8 @@ layout: center
 </v-clicks>
 
 ---
-layout: section
+layout: intro-image-right
+image: image2.jpeg
 ---
 
 # Part 1: some quantitative results
@@ -537,7 +538,8 @@ onMounted(async () => {
 
 
 ---
-layout: section
+layout: intro-image-right
+image: image3.jpg
 ---
 
 
@@ -612,6 +614,7 @@ transition: fade
 
 # More useful VSCode extensions 
 
+ - Path Intellisense: autocomplete filenames
  - autoDocString: generates python docstrings
  - RemoteExplorer: SSH to remote machines
  - Code Runner: provide shortcuts to evaluate current line / current script in python
