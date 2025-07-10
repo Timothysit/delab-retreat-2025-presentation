@@ -111,8 +111,6 @@ image: image2.jpeg
 import Plotly from 'plotly.js-dist'
 import { onMounted } from 'vue'
 
-
-
 onMounted(async () => {
   const response = await fetch('survey-results.csv')
   const text = await response.text()
@@ -120,7 +118,6 @@ onMounted(async () => {
   const header = lines[0].split(',').map(h => h.trim())
   const rows = lines.slice(1)
 
-  // Dynamically extract column indices
   const nameIdx = header.indexOf('name')
   const questionIdx = header.indexOf('question')
   const answerIdx = header.indexOf('answer')
@@ -130,24 +127,29 @@ onMounted(async () => {
     return
   }
 
+  const positionMap = new Map<string, string>()  // name → position
+
   const data = rows.map(line => {
     const cols = line.split(',').map(c => c.trim())
-    return {
-      name: cols[nameIdx],
-      question: cols[questionIdx],
-      answer: +cols[answerIdx]
-    }
+    const [name, question, answer] = [cols[nameIdx], cols[questionIdx], cols[answerIdx]]
+    if (question === 'position') positionMap.set(name, answer)
+    return { name, question, answer: +answer }
   })
 
   const languageData = data.filter(d => d.question.startsWith('language-'))
   const languages = [...new Set(languageData.map(d => d.question.replace('language-', '')))]
-  const names = [...new Set(languageData.map(d => d.name))]
+  const allNames = [...new Set(languageData.map(d => d.name))]
+  const allPositions = [...new Set([...positionMap.values()])].sort()
 
-  console.log("Languages:", languages)
-  console.log("Names:", names)
-  console.log("Data:", languageData)
+  const dropdown = document.getElementById('position-filter') as HTMLSelectElement
+  allPositions.forEach(pos => {
+    const option = document.createElement('option')
+    option.value = pos
+    option.text = pos
+    dropdown.appendChild(option)
+  })
 
-  const traces = names.map(name => {
+  const createTraces = (names: string[]) => names.map(name => {
     const personData = languageData.filter(d => d.name === name)
     const answerMap = Object.fromEntries(
       personData.map(d => [d.question.replace('language-', ''), d.answer])
@@ -160,15 +162,13 @@ onMounted(async () => {
       mode: 'lines+markers',
       name: name,
       hoverinfo: 'y',
-      uid: name  // 👈 gives each trace a unique ID for selection logic
+      uid: name
     }
   })
 
-  console.log("Traces:", traces)
-
-  Plotly.newPlot('plot', traces, {
-   title: undefined,
-   yaxis: {
+  const layout = {
+    title: undefined,
+    yaxis: {
       title: { text: 'Usage (%)', font: { size: 16, color: '#333' } },
       rangemode: 'tozero',
       automargin: true
@@ -176,81 +176,108 @@ onMounted(async () => {
     xaxis: {
       title: { text: 'Language', font: { size: 16, color: '#333' }, standoff: 20 },
       type: 'category',
-      automargin: true,
+      automargin: true
     },
     margin: { t: 20, b: 80, l: 80, r: 0 },
-    showlegend: false, 
-    font: {
-    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
-    size: 14,
-    color: '#333'
-  },
-  }, {displayModeBar: false})
-  let highlightedName: string | null = null
-
-  const plotDiv = document.getElementById('plot')
-
-  plotDiv.on('plotly_click', (event) => {
-    const clickedName = event.points[0].data.name
-
-    if (highlightedName === clickedName) {
-      // Reset: show all traces
-      Plotly.restyle(plotDiv, { opacity: 1 })
-      highlightedName = null
-    } else {
-      // Dim all, highlight one
-      const traces = plotDiv.data.map(trace => trace.name)
-      const opacities = traces.map(name => name === clickedName ? 1 : 0.1)
-      Plotly.restyle(plotDiv, { opacity: opacities })
-      highlightedName = clickedName
-    }
-  })
-
-  // 🔸 Pie chart: most-used language per person
-  const langByPerson = names.map(name => {
-    const personData = languageData.filter(d => d.name === name)
-    const topLang = personData.reduce((max, curr) =>
-      !max || curr.answer > max.answer ? curr : max, null)
-    return topLang ? topLang.question.replace('language-', '') : null
-  }).filter(Boolean)
-
-  const langCounts = languages.map(lang => ({
-    lang,
-    count: langByPerson.filter(x => x === lang).length
-  })).filter(entry => entry.count > 0)
-
-  const pieData = [{
-    type: 'pie',
-    labels: langCounts.map(d => d.lang),
-    values: langCounts.map(d => d.count),
-    textinfo: 'label+percent',
-    hoverinfo: 'label+value+percent',
-    marker: { line: { color: '#fff', width: 1 } }
-  }]
-
-  Plotly.newPlot('plot-language-pie', pieData, {
-    margin: { t: 40, b: 40, l: 50, r: 40 },
     showlegend: false,
     font: {
       family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
       size: 14,
       color: '#333'
-    },
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)'
-  }, {displayModeBar: false})
+    }
+  }
 
+  function updatePieChart(filteredNames: string[]) {
+    const langByPerson = filteredNames.map(name => {
+      const personData = languageData.filter(d => d.name === name)
+      const topLang = personData.reduce((max, curr) =>
+        !max || curr.answer > max.answer ? curr : max, null)
+      return topLang ? topLang.question.replace('language-', '') : null
+    }).filter(Boolean)
 
+    const langCounts = languages.map(lang => ({
+      lang,
+      count: langByPerson.filter(x => x === lang).length
+    })).filter(entry => entry.count > 0)
+
+    const pieData = [{
+      type: 'pie',
+      labels: langCounts.map(d => d.lang),
+      values: langCounts.map(d => d.count),
+      textinfo: 'label+percent',
+      hoverinfo: 'label+value+percent',
+      marker: { line: { color: '#fff', width: 1 } }
+    }]
+
+    Plotly.react('plot-language-pie', pieData, {
+      margin: { t: 40, b: 40, l: 50, r: 40 },
+      showlegend: false,
+      font: {
+        family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
+        size: 14,
+        color: '#333'
+      },
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)'
+    }, { displayModeBar: false })
+  }
+
+  const updatePlot = (position: string) => {
+    const filteredNames = position === 'all'
+      ? allNames
+      : allNames.filter(name => positionMap.get(name) === position)
+
+    const traces = createTraces(filteredNames)
+    Plotly.react('plot', traces, layout, { displayModeBar: false })
+
+    updatePieChart(filteredNames)
+  }
+
+  updatePlot('all')
+
+  dropdown.addEventListener('change', (e) => {
+    const selected = (e.target as HTMLSelectElement).value
+    updatePlot(selected)
+  })
+
+  // Optional: highlight a person on click
+  let highlightedName: string | null = null
+  const plotDiv = document.getElementById('plot')
+  plotDiv.on('plotly_click', (event) => {
+    const clickedName = event.points[0].data.name
+    if (highlightedName === clickedName) {
+      Plotly.restyle(plotDiv, { opacity: 1 })
+      highlightedName = null
+    } else {
+      const traces = plotDiv.data.map((trace: any) => trace.name)
+      const opacities = traces.map((name: string) => name === clickedName ? 1 : 0.1)
+      Plotly.restyle(plotDiv, { opacity: opacities })
+      highlightedName = clickedName
+    }
+  })
 })
-
-
-
 </script>
 
-<div style="display: flex; justify-content: center; align-items: center; gap: 40px;">
-  <div id="plot" style="width: 600px; height: 500px;"></div>
+
+
+
+
+
+
+
+<div style="display: flex; justify-content: center; align-items: flex-start; gap: 40px;">
+  <!-- Left column: dropdown above the plot -->
+  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px;">
+    <select id="position-filter" style="font-size: 1em; padding: 0.2em;">
+      <option value="all">All Positions</option>
+    </select>
+    <div id="plot" style="width: 600px; height: 400px;"></div>
+  </div>
+
+  <!-- Right column: pie chart -->
   <div id="plot-language-pie" style="width: 400px; height: 400px;"></div>
 </div>
+
 
 ---
 
@@ -729,21 +756,22 @@ layout: center
 
 
 ---
-
-
+layout: image-right
+image: image4.jpg
+---
 
 # The end 
 
 <v-clicks>
 
 
- - Thank you to everyone who I interviewed 
+ - Thank you to everyone whom I interviewed! 
  - Slides were made using sli.dev, they are in https://timothysit.github.io/delab-retreat-2025-presentation
 
  Some other things I didn't have time to discuss: 
 
   - writing tests for analysis code
-  - python environment management (why are more conda environments so hard to reproduce?)
+  - python environment management (why are my conda environments so hard to reproduce?), should I use docker?
 
 
  </v-clicks>
