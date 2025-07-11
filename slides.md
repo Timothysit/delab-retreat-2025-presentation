@@ -121,6 +121,9 @@ onMounted(async () => {
   const nameIdx = header.indexOf('name')
   const questionIdx = header.indexOf('question')
   const answerIdx = header.indexOf('answer')
+  const modernColors = [
+'#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000'
+]
 
   if (nameIdx === -1 || questionIdx === -1 || answerIdx === -1) {
     console.error("Missing one of the required columns: name, question, answer")
@@ -149,7 +152,7 @@ onMounted(async () => {
     dropdown.appendChild(option)
   })
 
-  const createTraces = (names: string[]) => names.map(name => {
+  const createTraces = (names: string[]) => names.map((name, i) => {
     const personData = languageData.filter(d => d.name === name)
     const answerMap = Object.fromEntries(
       personData.map(d => [d.question.replace('language-', ''), d.answer])
@@ -162,7 +165,9 @@ onMounted(async () => {
       mode: 'lines+markers',
       name: name,
       hoverinfo: 'y',
-      uid: name
+      uid: name,
+      line: { color: modernColors[i % modernColors.length], width: 2 },
+      marker: { color: modernColors[i % modernColors.length], size: 6 }
     }
   })
 
@@ -301,6 +306,9 @@ onMounted(async () => {
   const nameIdx = header.indexOf('name')
   const questionIdx = header.indexOf('question')
   const answerIdx = header.indexOf('answer')
+  const modernColors = [
+'#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000'
+]
 
   if (nameIdx === -1 || questionIdx === -1 || answerIdx === -1) {
     console.error("Missing one of the required columns: name, question, answer")
@@ -321,22 +329,25 @@ onMounted(async () => {
   const names = [...new Set(osData.map(d => d.name))]
 
 
-  const traces = names.map(name => {
-    const personData = osData.filter(d => d.name === name)
-    const answerMap = Object.fromEntries(
-      personData.map(d => [d.question.replace('os-', ''), d.answer])
-    )
-    const yValues = osLabels.map(lang => answerMap[lang] ?? 0)
-    return {
-      x: osLabels,
-      y: yValues,
-      type: 'scatter',
-      mode: 'lines+markers',
-      name: name,
-      hoverinfo: 'y',
-      uid: name  // 👈 gives each trace a unique ID for selection logic
-    }
-  })
+  const traces = names.map((name, i) => {
+  const personData = osData.filter(d => d.name === name)
+  const answerMap = Object.fromEntries(
+    personData.map(d => [d.question.replace('os-', ''), d.answer])
+  )
+  const yValues = osLabels.map(label => answerMap[label] ?? 0)
+  const color = modernColors[i % modernColors.length]
+  return {
+    x: osLabels,
+    y: yValues,
+    type: 'scatter',
+    mode: 'lines+markers',
+    name: name,
+    hoverinfo: 'y',
+    uid: name,
+    line: { color: color, width: 2 },
+    marker: { color: color, size: 6 }
+  }
+})
 
   console.log("Traces:", traces)
 
